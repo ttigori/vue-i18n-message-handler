@@ -57,4 +57,10 @@ const replaceSubContentOf = (text, startIndex, endIndex, subContentToInsert) => 
     return text.substring(0, startIndex) + subContentToInsert + text.substring(endIndex)
 }
 
-module.exports = { getLoadingBar, getI18nStartAndEndIndexes, replaceSubContentOf }
+const truncateString = (str, expectedLength) => {
+    const lastFiveChar = str.slice(-5)
+    const threddDots = '...'
+    return str.length > expectedLength ? str.slice(0, expectedLength >= 8 ? expectedLength - 8 : expectedLength) + threddDots + lastFiveChar : str;
+}
+
+module.exports = { getLoadingBar, getI18nStartAndEndIndexes, replaceSubContentOf, truncateString }

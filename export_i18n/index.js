@@ -3,7 +3,7 @@ const glob = require("glob")
 const compiler = require("vue-template-compiler")
 const XLSX = require('xlsx')
 const path = require("path")
-const { getLoadingBar, getI18nStartAndEndIndexes } = require("../utils")
+const { getLoadingBar, getI18nStartAndEndIndexes, truncateString } = require("../utils")
 const JSON5 = require('json5')
 
 
@@ -136,9 +136,10 @@ const processFiles = (files, outputFileName) => {
     let workBook = createWorkBook()
 
     files.forEach((file, index) => {
-        let fileId;
         let workSheet;
         let i18nData
+
+        const fileId = truncateString(path.basename(file), 31)
 
         if (path.extname(file) === ".vue") {
             const vueComponent = compiler.parseComponent(fs.readFileSync(file).toString())
@@ -156,13 +157,11 @@ const processFiles = (files, outputFileName) => {
             const finalKeys = getAlli18nObjectPath(i18nData)
             const excelData = computeArrayOfJsonData(i18nData, finalKeys)
             workSheet = createWorkSheet(excelData)
-            fileId = path.basename(file)
         } else if (path.extname(file) === ".json") {
             i18nData = JSON.parse(fs.readFileSync(file).toString())
             const finalKeys = getAlli18nObjectPath(i18nData)
             const excelData = computeArrayOfJsonData(i18nData, finalKeys)
             workSheet = createWorkSheet(excelData)
-            fileId = path.basename(file)
         }
         filePathIds[fileId] = file
         appendWorkSheetToWorkBook(workBook, workSheet, fileId)
