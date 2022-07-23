@@ -1,0 +1,53 @@
+{
+  "en": {
+    "pageTitle": "Contributors",
+    "loadingText": "Loading the list of contributors",
+    "external": "External contributors",
+    "internal": "Internal contributors",
+    "addContributor": "Add contributor",
+    "menu": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleted": "Deleted",
+      "errorDelete": "Impossible de supprimé l&apos;intervenant"
+    },
+    "confirmDeletion": {
+      "text": "Do you realy want to delete this contributor ?",
+      "title": "Delete contributor"
+    }
+  },
+  "fr": {
+    "pageTitle": "Intervenants",
+    "loadingText": "Chargement de la liste des intervenants",
+    "external": "Intervenants externes",
+    "internal": "Intervenants internes",
+    "addContributor": "Ajouter un intervenant",
+    "menu": {
+      "edit": "Éditer",
+      "delete": "Supprimer",
+      "deleted": "Supprimé",
+      "errorDelete": "Can&apos;t delete the contributor"
+    },
+    "confirmDeletion": {
+      "text": "Voulez vous vraiment effacer ce contributeur ?",
+      "title": "Effacer ce contributeur"
+    }
+  },
+  "nl": {
+    "pageTitle": "ffffffffffff",
+    "loadingText": "nnnnnnn",
+    "external": "lknljbljb",
+    "internal": "kbvlivhk ",
+    "addContributor": "ljvhhvkhb",
+    "menu": {
+      "edit": "jvljgvhkvhk",
+      "delete": "vlgvhkvk",
+      "deleted": "khvlhvkhlv",
+      "errorDelete": "kmhbmhkb"
+    },
+    "confirmDeletion": {
+      "text": "mkbmkhbmhkb",
+      "title": "ljgvljgvlgv"
+    }
+  }
+}
