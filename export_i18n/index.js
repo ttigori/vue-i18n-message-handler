@@ -8,9 +8,13 @@ const JSON5 = require('json5')
 
 
 const extractI18nFromCustomBlock = (vueComponent) => {
-    const i18nBlock = vueComponent.customBlocks.filter(block => block.type === 'i18n').map(block => JSON.parse(block.content))
-    return i18nBlock[0]
+    const i18nBlock = vueComponent.customBlocks.find(block => block.type === 'i18n')
 
+    if (!i18nBlock) {
+        return ''
+    }
+
+    return JSON.parse(i18nBlock.content)
 }
 
 const extractI18nFromScriptBlock = (vueComponent) => {

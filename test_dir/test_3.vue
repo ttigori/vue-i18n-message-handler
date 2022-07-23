@@ -18,7 +18,7 @@ export default {
 
   },
 
-  i18n:     {
+  i18n:{
   messages: {
     fr: {
       PENDING: 'En attente',
@@ -28,7 +28,7 @@ export default {
       CLOSED: 'Clôturée',
       TERMINATED: 'Résiliée',
       Status: 'Statut',
-      ORDEREDxCLOSED: 'Commandée / Clôturée',
+      ORDEREDCLOSED: 'Commandée / Clôturée',
     },
     nl: {
       PENDING: 'ed',
@@ -38,7 +38,7 @@ export default {
       CLOSED: 'édeéde',
       TERMINATED: 'rev',
       Status: 'v',
-      ORDEREDxCLOSED: 'rrr',
+      ORDEREDCLOSED: 'rrr',
     },
     en: {
       PENDING: 'Pending',
@@ -48,7 +48,7 @@ export default {
       CLOSED: 'Closed',
       TERMINATED: 'Terminated',
       Status: 'Status',
-      ORDERERxCLOSED: 'Ordered / Closed',
+      ORDERERCLOSED: 'Ordered / Closed',
     },
   },
 },

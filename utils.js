@@ -53,4 +53,8 @@ const getI18nStartAndEndIndexes = (text) => {
     return { start: textContentI18nStart, end: textContentI18nEnd }
 }
 
-module.exports = { getLoadingBar, getI18nStartAndEndIndexes }
+const replaceSubContentOf = (text, startIndex, endIndex, subContentToInsert) => {
+    return text.substring(0, startIndex) + subContentToInsert + text.substring(endIndex)
+}
+
+module.exports = { getLoadingBar, getI18nStartAndEndIndexes, replaceSubContentOf }
