@@ -33,6 +33,23 @@
       "title": "Effacer ce contributeur"
     }
   },
+  "it": {
+    "pageTitle": "scqsc",
+    "loadingText": "qccqsc",
+    "external": "sccs",
+    "internal": "qscsc",
+    "addContributor": "scsqcs",
+    "menu": {
+      "edit": "qscqsc",
+      "delete": "sqcsqc",
+      "deleted": "sqcsqc",
+      "errorDelete": "scscsc"
+    },
+    "confirmDeletion": {
+      "text": "scsc",
+      "title": "cs"
+    }
+  },
   "nl": {
     "pageTitle": "ffffffffffff",
     "loadingText": "nnnnnnn",

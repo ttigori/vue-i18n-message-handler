@@ -3,7 +3,7 @@ const glob = require("glob")
 const compiler = require("vue-template-compiler")
 const XLSX = require('xlsx')
 const path = require("path")
-const { getLoadingBar, getI18nStartAndEndIndexes, truncateString } = require("../utils")
+const { getLoadingBar, getJsObjectPerimeterFromString, truncateString } = require("../utils")
 const JSON5 = require('json5')
 
 
@@ -21,13 +21,12 @@ const extractI18nFromScriptBlock = (vueComponent) => {
 
     const scriptContent = vueComponent.script.content
 
-
     if (scriptContent.includes("i18n:")) {
 
-        const { start, end } = getI18nStartAndEndIndexes(scriptContent)
+        const { start, end } = getJsObjectPerimeterFromString(scriptContent, "messages")
 
         const i18nFinalContent = scriptContent.substring(start, end)
-        const content = JSON5.parse(i18nFinalContent).messages
+        const content = JSON5.parse(i18nFinalContent)
 
         return content
     }
@@ -138,6 +137,8 @@ const processFiles = (files, outputFileName) => {
     files.forEach((file, index) => {
         let workSheet;
         let i18nData
+
+        // console.log("file", file)
 
         const fileId = truncateString(path.basename(file), 31)
 

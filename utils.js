@@ -32,11 +32,8 @@ const getEndOfI18nContentIndex = (text) => {
     return -1
 }
 
-
-
-const getI18nStartAndEndIndexes = (text) => {
-
-    const i18nKeyStartIndex = text.indexOf("i18n:");
+const getJsObjectPerimeterFromString = (text, objectName = "i18n") => {
+    const i18nKeyStartIndex = text.indexOf(`${objectName}:`);
 
     const textFromI18nKey = text.substring(i18nKeyStartIndex)
 
@@ -63,4 +60,4 @@ const truncateString = (str, expectedLength) => {
     return str.length > expectedLength ? str.slice(0, expectedLength >= 8 ? expectedLength - 8 : expectedLength) + threddDots + lastFiveChar : str;
 }
 
-module.exports = { getLoadingBar, getI18nStartAndEndIndexes, replaceSubContentOf, truncateString }
+module.exports = { getLoadingBar, getJsObjectPerimeterFromString, replaceSubContentOf, truncateString }

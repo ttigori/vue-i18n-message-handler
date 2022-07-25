@@ -2,7 +2,7 @@ const fs = require("fs")
 const compiler = require("vue-template-compiler")
 const XLSX = require('xlsx')
 const path = require("path")
-const { getLoadingBar, getI18nStartAndEndIndexes, replaceSubContentOf } = require("../utils")
+const { getLoadingBar, getJsObjectPerimeterFromString, replaceSubContentOf } = require("../utils")
 const JSON5 = require('json5')
 
 
@@ -20,12 +20,11 @@ const writeInI18nCustomBlock = (vueComponent, newI18nContentAsJson, vueContentAs
 
 const writeInI18nOfScriptBlock = (vueComponent, newI18nContentAsJson, vueContentAsString, filePath) => {
 
-    const newI18nContent = { messages: newI18nContentAsJson }
-    const newI18nContentAsString = `${JSON5.stringify(newI18nContent, null, 2)}`
+    const newI18nContentAsString = `${JSON5.stringify(newI18nContentAsJson, null, 6)}`
 
     const scriptContent = vueComponent.script.content
     if (scriptContent.includes("i18n:")) {
-        const { start, end } = getI18nStartAndEndIndexes(scriptContent)
+        const { start, end } = getJsObjectPerimeterFromString(scriptContent, "messages")
         const newScriptContent = replaceSubContentOf(scriptContent, start, end, newI18nContentAsString)
         writeIni18nBlock(vueContentAsString, vueComponent.script.start, vueComponent.script.end, filePath, newScriptContent)
     }
