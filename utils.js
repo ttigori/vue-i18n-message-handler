@@ -11,13 +11,11 @@ const getLoadingBar = (displayMessage = "") => {
     });
 }
 
-const getEndOfI18nContentIndex = (text) => {
+const getEndOfObjectContentIndex = (text) => {
     const map = {
         "}": "{"
     }
-
     let stack = []
-
     for (let i = 0; i < text.length; i++) {
         if (text[i] === "{") {
             stack.push(text[i])
@@ -28,25 +26,17 @@ const getEndOfI18nContentIndex = (text) => {
             return i + 1
         }
     }
-
     return -1
 }
 
 const getJsObjectPerimeterFromString = (text, objectName = "i18n") => {
     const i18nKeyStartIndex = text.indexOf(`${objectName}:`);
-
     const textFromI18nKey = text.substring(i18nKeyStartIndex)
-
     const firstBracketIndex = textFromI18nKey.indexOf("{")
-
     const textFromI18nContent = textFromI18nKey.substring(firstBracketIndex)
-
-    const endOfI18nContentIndex = getEndOfI18nContentIndex(textFromI18nContent)
-
+    const endOfI18nContentIndex = getEndOfObjectContentIndex(textFromI18nContent)
     const textContentI18nStart = i18nKeyStartIndex + firstBracketIndex
-
     const textContentI18nEnd = i18nKeyStartIndex + firstBracketIndex + endOfI18nContentIndex
-
     return { start: textContentI18nStart, end: textContentI18nEnd }
 }
 

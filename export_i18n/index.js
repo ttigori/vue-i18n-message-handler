@@ -7,34 +7,28 @@ const { getLoadingBar, getJsObjectPerimeterFromString, truncateString } = requir
 const JSON5 = require('json5')
 
 
-const extractI18nFromCustomBlock = (vueComponent) => {
+const SHEET_NAME_MAX_LENGTH = 31
+
+const extractI18nContentFromCustomBlock = (vueComponent) => {
     const i18nBlock = vueComponent.customBlocks.find(block => block.type === 'i18n')
-
     if (!i18nBlock) {
-        return ''
+        return null
     }
-
     return JSON.parse(i18nBlock.content)
 }
 
-const extractI18nFromScriptBlock = (vueComponent) => {
-
+const extractI18nContentFromScriptBlock = (vueComponent) => {
     const scriptContent = vueComponent.script.content
-
     if (scriptContent.includes("i18n:")) {
-
         const { start, end } = getJsObjectPerimeterFromString(scriptContent, "messages")
-
         const i18nFinalContent = scriptContent.substring(start, end)
         const content = JSON5.parse(i18nFinalContent)
-
         return content
     }
-
     return null
 }
 
-const generateJson = (jsonObject, fileName = "test.json") => {
+const generateJsonFileFromJsObject = (jsonObject, fileName = "test.json") => {
     const jsonContent = JSON.stringify(jsonObject, null, 2);
     fs.writeFile(fileName, jsonContent, 'utf8', function (err) {
         if (err) {
@@ -44,8 +38,7 @@ const generateJson = (jsonObject, fileName = "test.json") => {
     });
 }
 
-
-const getFromPath = (object, path) => {
+const getValueFromPath = (object, path) => {
     const keys = path.split('.');
     let result = object;
     for (const key of keys) {
@@ -54,13 +47,12 @@ const getFromPath = (object, path) => {
         } catch (err) {
             continue
         }
-
     }
     return result;
 }
 
 
-const getAlli18nObjectPath = (obj) => {
+const getAlli18nObjectPathes = (obj) => {
     let objectKeys = []
     Object.keys(obj).forEach((key) => {
         const keys = getObjectKeys(obj[key])
@@ -75,7 +67,7 @@ const computeArrayOfJsonData = (obj, objectPathes) => {
         const row = { 'key': key }
 
         Object.keys(obj).forEach((objKey) => {
-            row[objKey] = getFromPath(obj[objKey], key)
+            row[objKey] = getValueFromPath(obj[objKey], key)
         })
 
         return row
@@ -84,16 +76,15 @@ const computeArrayOfJsonData = (obj, objectPathes) => {
 
 const getObjectKeys = (obj, previousPath = '', objectKeys = []) => {
     let result = [...objectKeys]
-    // Step 1- Go through all the keys of the object
+    // INFO T.T - 25/07/2022: In first step, we go through all objects keys
     Object.keys(obj).forEach((key) => {
-        // Get the current path and concat the previous path if necessary
+        // INFO T.T - 25/07/2022: Get the current path and concat the previous path if necessary
         const currentPath = previousPath ? `${previousPath}.${key}` : key;
-        // Step 2- If the value is a string, then add it to the keys array
+        // INFO T.T - 25/07/2022: In second step, if the value is not an object, then add it to the keys array
         if (typeof obj[key] !== 'object') {
             result.push(currentPath);
         } else {
-            // result.push(currentPath);
-            // Step 3- If the value is an object, then recursively call the function
+            // INFO T.T - 25/07/2022: If the value is an object, then recursively call the function
             result = getObjectKeys(obj[key], currentPath, result);
         }
     });
@@ -122,7 +113,6 @@ const exportExcel = (workBook, fileName) => {
 
 const processFiles = (files, outputFileName) => {
 
-
     if (!files.length) {
         console.log("No files found")
         return
@@ -130,44 +120,37 @@ const processFiles = (files, outputFileName) => {
 
     const filesProcessingLoadingBar = getLoadingBar("Export i18n messages from files")
     filesProcessingLoadingBar.start(files.length, 0);
-
     const filePathIds = {}
-
     let workBook = createWorkBook()
 
     files.forEach((file, index) => {
         let workSheet;
         let i18nData
-
-        const fileId = truncateString(`${path.basename(file)}(${index})`, 31)
+        const fileId = truncateString(`${path.basename(file)}(${index})`, SHEET_NAME_MAX_LENGTH)
 
         if (path.extname(file) === ".vue") {
             const vueComponent = compiler.parseComponent(fs.readFileSync(file).toString())
-
-            i18nData = extractI18nFromCustomBlock(vueComponent)
-
+            // INFO T.T - 25/07/2022: We try first to extract message from i18n custom block, if we don't find anything, we try extraction in script block
+            i18nData = extractI18nContentFromCustomBlock(vueComponent)
             if (!i18nData) {
-                i18nData = extractI18nFromScriptBlock(vueComponent)
+                i18nData = extractI18nContentFromScriptBlock(vueComponent)
             }
-
-            if (!i18nData) {
-                filesProcessingLoadingBar.update(index + 1, { file: file });
-                return
-            }
-            const finalKeys = getAlli18nObjectPath(i18nData)
-            const excelData = computeArrayOfJsonData(i18nData, finalKeys)
-            workSheet = createWorkSheet(excelData)
         } else if (path.extname(file) === ".json") {
             i18nData = JSON.parse(fs.readFileSync(file).toString())
-            const finalKeys = getAlli18nObjectPath(i18nData)
-            const excelData = computeArrayOfJsonData(i18nData, finalKeys)
-            workSheet = createWorkSheet(excelData)
+        } else {
+            console.log("File not supported")
         }
+
+        if (!i18nData) {
+            filesProcessingLoadingBar.update(index + 1, { file: file });
+            return
+        }
+        const finalKeys = getAlli18nObjectPathes(i18nData)
+        const excelData = computeArrayOfJsonData(i18nData, finalKeys)
+        workSheet = createWorkSheet(excelData)
         filePathIds[fileId] = file
         appendWorkSheetToWorkBook(workBook, workSheet, fileId)
-
         filesProcessingLoadingBar.update(index + 1, { file: file });
-
     })
 
     if (!workBook.SheetNames.length) {
@@ -177,12 +160,12 @@ const processFiles = (files, outputFileName) => {
     }
 
     exportExcel(workBook, outputFileName)
-    generateJson(filePathIds, "filesPathIds.json")
-
+    generateJsonFileFromJsObject(filePathIds, "filesPathIds.json")
     filesProcessingLoadingBar.stop();
 }
 
 const exportI18nMessages = (dir, outputFileName) => {
+    // INFO T.T - 25/07/2022: Here we check aall json and vue files except package-lock.json and package.json files
     glob(`${dir}/**/!(package)*.{json,vue}`, (_, files) => processFiles(files, outputFileName))
 }
 

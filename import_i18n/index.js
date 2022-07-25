@@ -8,30 +8,24 @@ const JSON5 = require('json5')
 
 
 const writeInI18nCustomBlock = (vueComponent, newI18nContentAsJson, vueContentAsString, filePath) => {
-
     const newI18nContent = `\n${JSON.stringify(newI18nContentAsJson, null, 2)}\n`
-
     const i18nBlock = vueComponent.customBlocks.find(block => block.type === 'i18n')
     if (i18nBlock) {
-        writeIni18nBlock(vueContentAsString, i18nBlock.start, i18nBlock.end, filePath, newI18nContent)
+        writeIni18nMessage(vueContentAsString, i18nBlock.start, i18nBlock.end, filePath, newI18nContent)
     }
-
 }
 
 const writeInI18nOfScriptBlock = (vueComponent, newI18nContentAsJson, vueContentAsString, filePath) => {
-
     const newI18nContentAsString = `${JSON5.stringify(newI18nContentAsJson, null, 6)}`
-
     const scriptContent = vueComponent.script.content
     if (scriptContent.includes("i18n:")) {
         const { start, end } = getJsObjectPerimeterFromString(scriptContent, "messages")
         const newScriptContent = replaceSubContentOf(scriptContent, start, end, newI18nContentAsString)
-        writeIni18nBlock(vueContentAsString, vueComponent.script.start, vueComponent.script.end, filePath, newScriptContent)
+        writeIni18nMessage(vueContentAsString, vueComponent.script.start, vueComponent.script.end, filePath, newScriptContent)
     }
 }
 
-
-function setValue(obj, path, value) {
+function setValueFromPath(obj, path, value) {
     const keys = path.split('.')
     while (keys.length - 1) {
         let firstKey = keys.shift()
@@ -42,9 +36,7 @@ function setValue(obj, path, value) {
 }
 
 
-
-
-const writeIni18nBlock = (content, i18nStart, i18nEnd, file, i18nBlockContent) => {
+const writeIni18nMessage = (content, i18nStart, i18nEnd, file, i18nBlockContent) => {
     fs.writeFileSync(
         file,
         replaceSubContentOf(content, i18nStart, i18nEnd, i18nBlockContent)
@@ -55,7 +47,6 @@ const importI18nMessages = (excelFilePath, idsPerPathesFile) => {
 
     const workbook = XLSX.readFile(excelFilePath);
     const sheet_name_list = workbook.SheetNames;
-
     const i18nImportLoadingBar = getLoadingBar("import i18n messages")
     i18nImportLoadingBar.start(sheet_name_list.length, 0);
 
@@ -65,7 +56,7 @@ const importI18nMessages = (excelFilePath, idsPerPathesFile) => {
         xlData.forEach(item => {
             Object.keys(item).forEach(itemKey => {
                 if (itemKey != "key") {
-                    setValue(objectJson, `${itemKey}.${item.key}`, item[itemKey])
+                    setValueFromPath(objectJson, `${itemKey}.${item.key}`, item[itemKey])
                 }
             })
         })
@@ -83,17 +74,12 @@ const importI18nMessages = (excelFilePath, idsPerPathesFile) => {
         } else if (path.extname(filePath) === ".vue") {
             const vueContentAsString = fs.readFileSync(filePath).toString()
             const vueComponent = compiler.parseComponent(vueContentAsString)
-
             writeInI18nCustomBlock(vueComponent, objectJson, vueContentAsString, filePath)
             writeInI18nOfScriptBlock(vueComponent, objectJson, vueContentAsString, filePath)
         }
-
         i18nImportLoadingBar.update(index + 1, { file: filePath });
-
     })
-
     i18nImportLoadingBar.stop();
-
 }
 
 module.exports = { importI18nMessages }
