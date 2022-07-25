@@ -122,6 +122,7 @@ const exportExcel = (workBook, fileName) => {
 
 const processFiles = (files, outputFileName) => {
 
+
     if (!files.length) {
         console.log("No files found")
         return
@@ -138,9 +139,7 @@ const processFiles = (files, outputFileName) => {
         let workSheet;
         let i18nData
 
-        // console.log("file", file)
-
-        const fileId = truncateString(path.basename(file), 31)
+        const fileId = truncateString(`${path.basename(file)}(${index})`, 31)
 
         if (path.extname(file) === ".vue") {
             const vueComponent = compiler.parseComponent(fs.readFileSync(file).toString())
@@ -184,7 +183,7 @@ const processFiles = (files, outputFileName) => {
 }
 
 const exportI18nMessages = (dir, outputFileName) => {
-    glob(`${dir}/**/*.{json,vue}`, (_, files) => processFiles(files, outputFileName))
+    glob(`${dir}/**/!(package)*.{json,vue}`, (_, files) => processFiles(files, outputFileName))
 }
 
 module.exports = { exportI18nMessages }

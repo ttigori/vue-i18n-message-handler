@@ -55,9 +55,9 @@ const replaceSubContentOf = (text, startIndex, endIndex, subContentToInsert) => 
 }
 
 const truncateString = (str, expectedLength) => {
-    const lastFiveChar = str.slice(-5)
+    const lastFiveChar = str.slice(-10)
     const threddDots = '...'
-    return str.length > expectedLength ? str.slice(0, expectedLength >= 8 ? expectedLength - 8 : expectedLength) + threddDots + lastFiveChar : str;
+    return str.length > expectedLength ? str.slice(0, expectedLength >= 13 ? expectedLength - 13 : expectedLength) + threddDots + lastFiveChar : str;
 }
 
 module.exports = { getLoadingBar, getJsObjectPerimeterFromString, replaceSubContentOf, truncateString }
