@@ -1,4 +1,4 @@
-# i18n-message-handler
+# vue-i18n-message-handler
 
 
 
