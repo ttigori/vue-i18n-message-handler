@@ -19,6 +19,7 @@ export default {
   },
 
   i18n:{
+  sharedMessages: {},
   messages: {
     fr: {
       PENDING: 'En attente',
